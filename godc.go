@@ -46,9 +46,14 @@ func (s *Stack) Reverse() {
 	}
 }
 
+func (s *Stack) Swap() {
+	lastIndex := len(s.data) - 1
+	s.data[lastIndex], s.data[lastIndex-1] = s.data[lastIndex-1], s.data[lastIndex]
+}
+
 func showError(err error) {
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("[Invalid Command]", err)
 	}
 }
 
@@ -101,12 +106,24 @@ func main() {
 		case "q":
 			os.Exit(0)
 
+			// stack control
+		case "c":
+			dc.data = nil
+		case "d":
+			dc.Push(dc.Peek())
+		case "r":
+			dc.Swap()
+		case "R":
+			dc.Reverse()
+
 			// default case (push the number to the stack)
 		default:
 			num, err := strconv.ParseFloat(input, 64)
-			showError(err)
-			dc.Push(num)
+			if err != nil {
+				showError(err)
+			} else {
+				dc.Push(num)
+			}
 		}
 	}
-
 }
