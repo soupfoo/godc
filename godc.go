@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 )
@@ -47,8 +48,12 @@ func (s *Stack) Reverse() {
 }
 
 func (s *Stack) Swap() {
-	lastIndex := len(s.data) - 1
-	s.data[lastIndex], s.data[lastIndex-1] = s.data[lastIndex-1], s.data[lastIndex]
+	if len(s.data) > 1 {
+		lastIndex := len(s.data) - 1
+		s.data[lastIndex], s.data[lastIndex-1] = s.data[lastIndex-1], s.data[lastIndex]
+	} else {
+		fmt.Println("[Not enough items to swap]")
+	}
 }
 
 func showError(err error) {
@@ -57,72 +62,124 @@ func showError(err error) {
 	}
 }
 
+func msg() {
+	fmt.Println("[Not enough operands]")
+}
+
 func main() {
 	dc := new(Stack)
 	reader := bufio.NewReader(os.Stdin)
 
 	for true {
+		fmt.Print(">  ")
+
 		input, _ := reader.ReadString('\n')
 		input = strings.TrimSpace(input)
-
 		if input == "" {
 			continue
 		}
-		switch input {
-		// Arithmetic operations
-		case "+":
-			x, y := dc.Pop().(float64), dc.Pop().(float64)
-			dc.Push(x + y)
-		case "-":
-			x, y := dc.Pop().(float64), dc.Pop().(float64)
-			dc.Push(y - x)
-		case "*":
-			x, y := dc.Pop().(float64), dc.Pop().(float64)
-			dc.Push(x * y)
-		case "/":
-			x, y := dc.Pop().(float64), dc.Pop().(float64)
-			dc.Push(y / x)
-		case "%":
-			x, y := dc.Pop().(float64), dc.Pop().(float64)
-			dc.Push(math.Mod(y, x))
-		case "~":
-			x, y := dc.Pop().(float64), dc.Pop().(float64)
-			dc.Push(y / x)
-			dc.Push(math.Mod(y, x))
-		case "^":
-			x, y := dc.Pop().(float64), dc.Pop().(float64)
-			dc.Push(math.Pow(y, x))
-		case "v":
-			x := dc.Pop().(float64)
-			dc.Push(math.Sqrt(x))
 
-			// Printing Commands
-		case "f":
-			fmt.Println(dc.data...)
-		case "p":
-			fmt.Println(dc.Peek())
-		case "n":
-			fmt.Println(dc.Pop())
-		case "q":
-			os.Exit(0)
+		expression := strings.Split(input, " ")
 
-			// stack control
-		case "c":
-			dc.data = nil
-		case "d":
-			dc.Push(dc.Peek())
-		case "r":
-			dc.Swap()
-		case "R":
-			dc.Reverse()
+		for _, element := range expression {
+			switch {
+			// Arithmetic operations
+			case element == "+":
+				if len(dc.data) > 1 {
+					x, y := dc.Pop().(float64), dc.Pop().(float64)
+					dc.Push(x + y)
+				} else {
+					msg()
+				}
+			case element == "-":
+				if len(dc.data) > 1 {
+					x, y := dc.Pop().(float64), dc.Pop().(float64)
+					dc.Push(y - x)
+				} else {
+					msg()
+				}
+			case element == "*":
+				if len(dc.data) > 1 {
+					x, y := dc.Pop().(float64), dc.Pop().(float64)
+					dc.Push(x * y)
+				} else {
+					msg()
+				}
+			case element == "/":
+				if len(dc.data) > 1 {
+					x, y := dc.Pop().(float64), dc.Pop().(float64)
+					dc.Push(y / x)
+				} else {
+					msg()
+				}
+			case element == "%":
+				if len(dc.data) > 1 {
+					x, y := dc.Pop().(float64), dc.Pop().(float64)
+					dc.Push(math.Mod(y, x))
+				} else {
+					msg()
+				}
+			case element == "~":
+				if len(dc.data) > 1 {
+					x, y := dc.Pop().(float64), dc.Pop().(float64)
+					dc.Push(y / x)
+					dc.Push(math.Mod(y, x))
+				} else {
+					msg()
+				}
+			case element == "^":
+				if len(dc.data) > 1 {
+					x, y := dc.Pop().(float64), dc.Pop().(float64)
+					dc.Push(math.Pow(y, x))
+				} else {
+					msg()
+				}
+			case element == "v":
+				if len(dc.data) > 0 {
+					x := dc.Pop().(float64)
+					dc.Push(math.Sqrt(x))
+				} else {
+					msg()
+				}
 
-			// default case (push the number to the stack)
-		default:
-			num, err := strconv.ParseFloat(input, 64)
-			if err != nil {
-				showError(err)
-			} else {
-				dc.Push(num)
+				// Printing commands
+			case element == "f":
+				fmt.Println(dc.data...)
+			case element == "p":
+				fmt.Println(dc.Peek())
+			case element == "n":
+				fmt.Println(dc.Pop())
+
+				// Stack control
+			case element == "c":
+				dc.data = nil
+			case element == "d":
+				dc.Push(dc.Peek())
+			case element == "r":
+				dc.Swap()
+			case element == "R":
+				dc.Reverse()
+			case element == "z":
+				dc.Push(len(dc.data))
+
+				// Miscellaneous
+			case element == "#" || strings.HasPrefix(element, "#"):
+				continue
+			case element == "clear":
+				cmd := exec.Command("clear")
+				cmd.Stdout = os.Stdout
+				cmd.Run()
+			case element == "q":
+				os.Exit(0)
+
+				// Default case (push the number to the stack)
+			default:
+				num, err := strconv.ParseFloat(element, 64)
+				if err != nil {
+					showError(err)
+				} else {
+					dc.Push(num)
+				}
 			}
 		}
 	}
