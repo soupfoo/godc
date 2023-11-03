@@ -53,7 +53,7 @@ func (s *Stack) Swap() {
 		lastIndex := len(s.data) - 1
 		s.data[lastIndex], s.data[lastIndex-1] = s.data[lastIndex-1], s.data[lastIndex]
 	} else {
-		fmt.Println("[Not enough items to swap]")
+		fmt.Println("(not enough items to swap)")
 	}
 }
 
@@ -70,12 +70,12 @@ func elementIndex(xs []string, s string) int {
 
 func showError(err error) {
 	if err != nil {
-		fmt.Println("[Invalid Command]", err)
+		fmt.Println("(invalid Command)", err)
 	}
 }
 
 func msg() {
-	fmt.Println("[Not enough operands]")
+	fmt.Println("(not enough operands)")
 }
 
 func help() {
@@ -114,6 +114,10 @@ e.g. [ 2 ^ ] sm
 x : executes a macro
 Q : quits a macro
 
+[Conditionals]
+=, !=, >, >=, <, <=
+usage: =m runs the macro m if top two elements of the stack are equal.
+
 [Miscellaneous]
 help : shows help text
 #    : comment line
@@ -123,8 +127,11 @@ q    : quits godc
 }
 
 func main() {
+	fmt.Println("(godc) type 'help' to see a list of commands")
+
 	dc := new(Stack)                 // main stack
 	register := make(map[string]any) // register
+	conditionals := []string{"=", "!=", ">", ">=", "<", "<="}
 
 	reader := bufio.NewReader(os.Stdin)
 
@@ -213,7 +220,7 @@ func main() {
 			// Registers
 			case strings.HasPrefix(element, "s"):
 				if len(element) < 2 {
-					fmt.Println("[invalid command]")
+					fmt.Println("(invalid command)")
 					break
 				}
 				value := dc.Pop()
@@ -230,7 +237,7 @@ func main() {
 			// Macros
 			case element == "x":
 				if dc.isEmpty() {
-					fmt.Println("[Empty stack]")
+					fmt.Println("(Empty stack)")
 					break
 				}
 				stackLen := len(dc.data)
@@ -239,13 +246,13 @@ func main() {
 
 				if elementType == reflect.Slice {
 					var temp any
-					temp = dc.data[stackLen-1]
+					temp = dc.Pop()
+					remainingExpression := expression[i+1:]
 					expression = temp.([]string)
-					dc.data = dc.data[:stackLen-1]
+					expression = append(expression, remainingExpression...)
 					i = -1
-					continue
 				} else {
-					fmt.Println("[Invalid macro]")
+					fmt.Println("(Invalid macro)")
 				}
 			case element == "Q":
 				break
@@ -254,7 +261,7 @@ func main() {
 			case element == "[":
 				endStr := elementIndex(expression, "]")
 				if endStr == -1 {
-					fmt.Println("[Invalid input : end of string not found]")
+					fmt.Println("(invalid input : end of string not found)")
 					break
 				}
 				stringExpression := expression[i+1 : endStr]
@@ -288,6 +295,43 @@ func main() {
 				dc.Reverse()
 			case element == "z":
 				dc.Push(len(dc.data))
+
+			// Conditionals
+			case elementIndex(conditionals, element[:len(element)-1]) != -1:
+				symbol := element[:len(element)-1]
+				var flag bool
+				if len(dc.data) < 2 {
+					msg()
+					break
+				}
+				macro := string(element[len(element)-1])
+				a, b := dc.Pop().(float64), dc.Pop().(float64)
+				switch symbol {
+				case "=":
+					flag = (a == b)
+				case "!=":
+					flag = (a != b)
+				case ">":
+					flag = (a > b)
+				case ">=":
+					flag = (a >= b)
+				case "<":
+					flag = (a < b)
+				case "<=":
+					flag = (a <= b)
+				default:
+					fmt.Println("(invalid operator)")
+				}
+				if flag && register[macro] != nil {
+					var val any
+					val = register[macro]
+					remainingExpression := expression[i+1:]
+					expression = val.([]string)
+					expression = append(expression, remainingExpression...)
+					i = -1
+				} else {
+					fmt.Println("(invalid macro)")
+				}
 
 			// Miscellaneous
 			case element == "help":
