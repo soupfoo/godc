@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"reflect"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -55,17 +56,6 @@ func (s *Stack) Swap() {
 	} else {
 		fmt.Println("(not enough items to swap)")
 	}
-}
-
-// Go v1.21 introduced slices pkg
-// slices.Index() can replace this function
-func elementIndex(xs []string, s string) int {
-	for i, value := range xs {
-		if value == s {
-			return i
-		}
-	}
-	return -1
 }
 
 func showError(err error) {
@@ -259,7 +249,7 @@ func main() {
 
 			// Strings
 			case element == "[":
-				endStr := elementIndex(expression, "]")
+				endStr := slices.Index(expression, "]")
 				if endStr == -1 {
 					fmt.Println("(invalid input : end of string not found)")
 					break
@@ -297,7 +287,7 @@ func main() {
 				dc.Push(len(dc.data))
 
 			// Conditionals
-			case elementIndex(conditionals, element[:len(element)-1]) != -1:
+			case slices.Index(conditionals, element[:len(element)-1]) != -1:
 				symbol := element[:len(element)-1]
 				var flag bool
 				if len(dc.data) < 2 {
