@@ -1,5 +1,5 @@
 # godc
-A reverse-polish desk calculator
+> A reverse-polish desk calculator
 
 godc is a [dc](https://en.wikipedia.org/wiki/Dc_(computer_program)) clone written in go. dc is one of the oldest surviving unix program, written even before the invention of C programming language.
 
