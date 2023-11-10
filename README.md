@@ -95,3 +95,7 @@ usage: `=m` runs the macro `m` if top two elements of the stack are equal.
 
 ## License
 godc is licensed under the MIT license. See [LICENSE](./LICENSE) for details.
+
+## Acknowledgement
+[MetaStag's godc](https://github.com/MetaStag/godc)
+
