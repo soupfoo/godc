@@ -4,7 +4,8 @@
 godc is a [dc](https://en.wikipedia.org/wiki/Dc_(computer_program)) clone written in go. dc is one of the oldest surviving unix program, written even before the invention of C programming language.
 
 ## Installation
-from source:
+Prerequisites:
+- a go compiler (>=v1.21)
 ```
 git clone https://github.com/soupfoo/godc.git
 cd godc
@@ -38,51 +39,52 @@ lx ld + ly / lx ld - ly / f
 ```
 
 ## Commands
-\<number> : pushes a number to the stack
+```
+>  help
+<number> : pushes a number to the stack
 
-### Arithematic operations
-- +,-,*,/ : sum, difference, product, quotient
-- % : remainder
-- ~ : quotient and remainder
-- ^ : exponentiation
-- | : modular exponentiation
-- v : square root
+[Arithematic operations]
++,-,*,/ : sum, difference, product, quotient
+% : remainder
+~ : quotient and remainder
+^ : exponentiation
+| : modular exponentiation
+v : square root
 
-### Printing commands
-- f : prints the entire contents of the stack
-- p : prints the value at the top of the stack
-- n : pops the value at the top of the stack and prints it
+[Printing commands]
+f : prints the entire contents of the stack
+p : prints the value at the top of the stack
+n : pops the value at the top of the stack and prints it
 
-### Stack control commands
-- c : clears the stack
-- d : duplicates the value at the top of the stack
-- r : swaps top two values
-- R : inverts the entire stack
-- z : pushes the length of the stack
+[Stack control commands]
+c : clears the stack
+d : duplicates the value at the top of the stack
+r : swaps top two values
+R : inverts the entire stack
+z : pushes the length of the stack
 
-### Registers
-- sx : pops the value at the top and saves it in register x
-- lx : pushes the value of x
+[Registers]
+sx : pops the value at the top and saves it in register x
+lx : pushes the value of x
 
-### Strings/Macros
+[Strings/Macros]
 Macros can be implemented by storing strings in register.
 Anything between [ and ] is a string.
+e.g. [ 2 ^ ] sm
+     this expression stores the string "2 ^" in register "m"
+x : executes a macro
+Q : quits a macro
 
-e.g. `[ 2 ^ ] sm` stores the string "2 ^" in register "m"
+[Conditionals]
+=, !=, >, >=, <, <=
+usage: =m runs the macro m if top two elements of the stack are equal.
 
-- x : executes a macro
-- Q : quits a macro
-
-### Conditionals
-`=, !=, >, >=, <, <=`
-
-usage: `=m` runs the macro `m` if top two elements of the stack are equal.
-
-### Miscellaneous
-- help : shows help text
-- \#    : comment line
-- clear: clears the screen
-- q    : quits godc
+[Miscellaneous]
+help : shows help text
+#    : comment line
+clear: clears the screen
+q    : quits godc
+```
 
 ## Limitations
 - Certain dc commands like `P,S,:,;` not implemented
