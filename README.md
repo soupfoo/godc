@@ -1,20 +1,27 @@
+
 # godc
+
 > A reverse-polish desk calculator
 
 godc is a [dc](https://en.wikipedia.org/wiki/Dc_(computer_program)) clone written in go. dc is one of the oldest surviving unix program, written even before the invention of C programming language.
 
 ## Installation
-Prerequisites:
-- a go compiler (>=v1.21)
+
+**Build from source:**
+
+Required: Go compiler (>=v1.21)
+
 ```
 git clone https://github.com/soupfoo/godc.git
 cd godc
 go build
 ./godc
 ```
+
 You can download a prebuilt binary from [releases](https://github.com/soupfoo/godc/releases) page as well.
 
 ## Usage
+
 godc uses postfix notation which means operators come after operands.
 
 examples:
@@ -39,8 +46,8 @@ lx ld + ly / lx ld - ly / f
 ```
 
 ## Commands
+
 ```
->  help
 <number> : pushes a number to the stack
 
 [Arithematic operations]
@@ -87,17 +94,21 @@ q    : quits godc
 ```
 
 ## Limitations
+
 - Certain dc commands like `P,S,:,;` not implemented
 - Precision control not implemented
 - Script mode `-e` and file mode `-f` not implemented
 - A register can store only one value at a time
 
 ## Known bugs
+
 - Entering more than one strings in a single line causes runtime error
 
 ## License
+
 godc is licensed under the MIT license. See [LICENSE](./LICENSE) for details.
 
 ## Acknowledgement
+
 [MetaStag's godc](https://github.com/MetaStag/godc)
 
